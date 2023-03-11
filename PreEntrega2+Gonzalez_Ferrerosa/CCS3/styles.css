@@ -1,0 +1,31 @@
+*{
+    box-sizing: border-box;
+    margin:0;
+
+
+    /* outline: 1px solid red;*/
+}
+
+
+body{  
+    background-image: url(https://www.xtrafondos.com/wallpapers/resized/patron-tom-nook-de-animal-crossing-6154.jpg?s=large);
+  
+    background-size: cover;;
+    font-family: 'Shantell Sans', cursive;
+
+}
+
+p{
+    position: fixed;
+    width: 90%;
+    max-width: 900px;
+    text-align: center;
+    top: 50%;
+    left: 50%;
+    margin: 1%px;
+    padding: 1%;
+    font-size: 50px;
+    transform: translate(-50%, -50%);
+    border-radius: 20px;
+    background-color:#fbfbe4;
+}
