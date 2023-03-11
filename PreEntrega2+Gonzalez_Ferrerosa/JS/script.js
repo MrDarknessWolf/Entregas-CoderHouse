@@ -8,7 +8,9 @@ Se cambio el metodo de seleccion a solo necesitar la posicion del producto sin n
 Se añadio metodo de busqueda al nook shooping
 Se añadieron mas productos al nook shopping
 Se añadio metodo de ordenar productos del nook shopping
-se cambio el admin para facilidad de escritura
+Se añadieron mas loops en caso de querer seguir comprando dentro de lista ordenada o en una busqueda
+Se aprovechan los NaN como parametros de salida o se agarran antes de generar error.
+Se desactivo el log in para mayor facilidad de probar el codigo
 
 */
 const villager = "ABD"; /*USARIO Y CONTRASEÑA PRE DEFINIDO */
