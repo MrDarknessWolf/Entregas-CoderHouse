@@ -187,6 +187,11 @@ function nookMiles() {
           " ?"
       );
         console.log(selection);
+        if(milesProducts[product-1].precio>miles|| shopCar>miles){
+          alert("Sorry you dont have enought miles");
+          break;
+        }
+
         if(selection==true){
           shopCar+=milesProducts[product-1].precio;
           moreProducts = prompt("Do you wish to add another item?"+"\n current miles "+miles +" miles"+" \n current total is "+shopCar+ " (Y/N)").toUpperCase()
@@ -360,7 +365,7 @@ while(exitNow==false){
       backToMain="";
       moreProducts = prompt("Do you wish to add another item?"+"\n current balance "+bells +" bells"+" \n current total is "+shopCar+ " bells (Y/N)").toUpperCase()
       if(moreProducts=="Y"){
-        if(catFind[product-1].precio>bells || totalNow>bells){
+        if(catFind[product-1].precio>bells ||shopCar>bells){
           alert("Sorry you dont have enought bells");
           break;
         }
@@ -419,13 +424,17 @@ while(exitNow==false){
         " ?"
     );
       //console.log(selection);
+      if(orderedShopping[product-1].precio>bells || shopCar>bells){
+        alert("Sorry you dont have enought bells");
+        break;
+      }
       if(selection==true){
         shopCar+=orderedShopping[product-1].precio;
         totalNow="\nYour current total in car is " +shopCar +" bells" +"\npress 0 to pay";
         backToMain="";
         moreProducts = prompt("Do you wish to add another item?"+"\n current balance "+bells +" bells"+" \n current total is "+shopCar+ " bells (Y/N)").toUpperCase()
         if(moreProducts=="Y"){
-          if(orderedShopping[product-1].precio>bells || totalNow>bells){
+          if(orderedShopping[product-1].precio>bells || shopCar>bells){
             alert("Sorry you dont have enought bells");
             break;
           }
