@@ -137,6 +137,8 @@ const storeProducts=[
 /*Por alguna razon no me colapsa en el visual estudio ////////////////////////////////////////////////////// */
 function nookMiles() {
   let message = "";
+  let product = 69;
+  let shopCar=0;
   for (i = 0; i < milesProducts.length; i++) {
     message +=
       i +
@@ -150,8 +152,7 @@ function nookMiles() {
       "\n";
   }
 
-  let product = 69;
-  let shopCar=0;
+  
   //console.log(milesProducts);
   while (product > 0) {
     product = parseInt(
@@ -173,6 +174,7 @@ function nookMiles() {
     alert("invalid input please try again")
   }
     else if (0<product <= milesProducts.length) {
+      
       /*console.log("i shoudnt exist");*/
       selection = confirm(
         milesProducts[product - 1].description+
@@ -189,9 +191,14 @@ function nookMiles() {
           shopCar+=milesProducts[product-1].precio;
           moreProducts = prompt("Do you wish to add another item?"+"\n current miles "+miles +" miles"+" \n current total is "+shopCar+ " (Y/N)").toUpperCase()
           if(moreProducts=="Y"){
+            if(milesProducts[product-1].precio>miles|| shopCar>miles){
+              alert("Sorry you dont have enought miles");
+              break;
+            }
             alert("please select another item");
           }else{
             miles-=shopCar;
+            shopCar=0;
             alert("Thank you for your purchase, your new balance is "+miles+" miles");
           }
         }
@@ -330,10 +337,11 @@ while(exitNow==false){
     }
     else if(product==0){
       bells-=shopCar;
-      alert("Your total is "+bells +" bells");
+      alert("Your balance is "+bells +" bells");
       break;
     }
     else if(0<product <= catFind.length){
+
     selection = confirm(
       catFind[product - 1].description+
         "\n reedeem " +
@@ -352,12 +360,17 @@ while(exitNow==false){
       backToMain="";
       moreProducts = prompt("Do you wish to add another item?"+"\n current balance "+bells +" bells"+" \n current total is "+shopCar+ " bells (Y/N)").toUpperCase()
       if(moreProducts=="Y"){
+        if(catFind[product-1].precio>bells || totalNow>bells){
+          alert("Sorry you dont have enought bells");
+          break;
+        }
         alert("please select another item");
       }else{
         bells-=shopCar;
         alert("Thank you for your purchase, your new balance is "+bells+" bells");
         exitNow=true;
         totalNow=0;
+        shopCar=0;
       }
   }}
   
@@ -382,18 +395,19 @@ while(exitNow==false){
     }
     
     while(exitNow==false){
-    product =parseInt(prompt("Your current balance is "+bells+" bells"+totalNow+"\nPlease select from the following items "+backToMain +message));
+    product =parseInt(prompt("Your current balance is "+bells+" bells"+totalNow+"\nPlease select from the following items "+backToMain +"\n"+message));
 
     ////////////////////////
     if(product==0){
       bells-=shopCar;
-      alert("Your total is "+bells +" bells");
+      alert("Your balance is "+bells +" bells");
       break;
     }
     else if(isNaN(product)){
       alert("Sorry invalid input")
     }
     else if (0<product <= orderedShopping.length){
+    
     selection = confirm(
       orderedShopping[product - 1].description+
         "\n reedeem " +
@@ -411,6 +425,10 @@ while(exitNow==false){
         backToMain="";
         moreProducts = prompt("Do you wish to add another item?"+"\n current balance "+bells +" bells"+" \n current total is "+shopCar+ " bells (Y/N)").toUpperCase()
         if(moreProducts=="Y"){
+          if(orderedShopping[product-1].precio>bells || totalNow>bells){
+            alert("Sorry you dont have enought bells");
+            break;
+          }
           alert("please select another item");
         }else{
           bells-=shopCar;
