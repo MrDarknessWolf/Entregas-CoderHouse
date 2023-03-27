@@ -400,7 +400,15 @@ function updateAmount(operation,amount,storage,storing){
   }
   else{
     if(amount>storage.bells){
-      alert("Not enought bells");
+      Toastify({
+        text: "It seems you dont have enough bells in this account",
+        gravity: "top",
+        position:"center",
+        className: "info",
+        style: {
+          background: "red",
+        }
+      }).showToast();
     }
     else{
       if(confirm("Widrawl: "+amount + " bells?")){
