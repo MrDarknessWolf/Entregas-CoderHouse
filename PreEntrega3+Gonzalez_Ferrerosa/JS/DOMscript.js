@@ -106,16 +106,17 @@ let authorize = 2;
 
 let logiBtn=document.getElementById("login-btn");
 let regBtn=document.getElementById("registerBtn");
+let nukeBtn=document.getElementById("nukeBtn");
 let Rmbr=document.getElementById("remember");
 let attempts = 3;
 
-
-
+const savedData = JSON.parse(localStorage.getItem('userInfo'));
+const tempData=   JSON.parse(sessionStorage.getItem('userInfo'));
+let storing=""
 //** funcion de inicio de session*/
 
 
-function logon(e) {
-    e.preventDefault();
+function logon(e,sData,storing){
   /*Funcion de log in con usuario y contraseña de 3 intentos*/
   let usrnInput=(document.getElementById("userAdress").value);
   
@@ -176,37 +177,41 @@ function logon(e) {
       }
     }
     else if(usrnInput===villager && passInput===password){
-      const userInfo={
+      let userInfo=""
+      console.log(sData.bells);
+
+      if(sData.bells>=0){
+        userInfo={"user": usrnInput,"pass": passInput,
+        "bells": sData.bells,"miles":sData.miles};
+      }else{
+        userInfo={
         "user": usrnInput,"pass": passInput,
         "bells": bells,"miles":miles
-      }
-      if (Rmbr.checked==true){
-       
-        localStorage.setItem('userInfo',JSON.stringify(userInfo))
-        mainMenu(userInfo);
-      }
-      else{
-        sessionStorage.setItem('userInfo',JSON.stringify(userInfo))
-
-      /** ahora que vaya al menu principal */
-      mainMenu(userInfo);  
       }}
+       console.log(storing)
+      storing.setItem('userInfo',JSON.stringify(userInfo))
+      location.reload();
+      mainMenu(userInfo);  
+      }
   }
   
 /*/////////////////////// funcion de la tienda miles///////////////////////*/
 function nookMiles(storage,storing) {
  /**///////////////////////// */ 
-  let message = "";
+ let message = "";
+ for (i = 0; i < milesProducts.length; i++) {//crea la lista de objetos fuera para que no tenga problemas creando duplicados
+  message+=
+  `<button class="menu__btn" id=`+i+`>`+ milesProducts[i].nombre +` </button> `
+ }   
+  function reloadMenu(){
+  
   document.getElementById("menu").outerHTML =
   `<section class="product" id="menu">
   <h1 class="menu__title"> Nook Miles reedeming shop</h>
   <div class="menu__finances">
       <h3 class="miles">`+storage.miles +` Miles</h3>
   </div> <div class="menu__selection" id="selectProduct">`
-  for (i = 0; i < milesProducts.length; i++) {
-    message+=
-    `<button class="menu__btn" id=`+i+`>`+ milesProducts[i].nombre +` </button> `
-   }        
+       
   document.getElementById("selectProduct").innerHTML =message+ `<br><button class="menu__btn" id="backMenu">Main menu</button></div> </section>`;
   console.log("menu reloaded")
 
@@ -228,12 +233,14 @@ function nookMiles(storage,storing) {
           else {
             storage.miles=storage.miles-milesProducts[btnonID].precio;
             storing.setItem('userInfo',JSON.stringify(storage));
+            reloadMenu();
       }
-      location.reload()}});
+      }});
 
   backMenu.addEventListener('click',()=>{
     mainMenu(storage);
-    });
+    });}
+  reloadMenu();
 }
 /**menu para la tienda de items */
 function order(selection,catalogList){
@@ -266,12 +273,88 @@ function seachbar(){
   <h1 class="menu__title"> Welcome to the catalog <br>Popular right now: Albums,Shoes,Hats</h1>
   <div class="menu__finances" id="selectProduct">
   <input type="seach" placeholder="im looking for.." class="login__input" id="lookingFor">
-  <button type="submit" id="seachNow" class="login__cta">Search</button></div>`
+  <button type="submit" id="seachNow" class="login__cta">Search</button>
+  <br><button class="menu__btn" id="backMenu">Main menu</button></div>`
 }
 function findItem(query,catalog){
   const filtrado= catalog.filter(catalog=>catalog.nombre.includes(query));
   return filtrado;
   }
+
+/////////////////////////////////////////////////////////////////
+  function loadMenu(storage,orderList,storing){
+  let message = "";
+  for (i = 0; i < orderList.length; i++) { //saco la lista automatica para que no la exienda en la actualizacion de datos
+    message+=
+    `<input type=checkbox class="menu__btn" id=`+i+` value= `+orderList[i].precio+`><span class="label">`+orderList[i].nombre + "- price: "+orderList[i].precio+" bells"+ `</span> </input>`
+    };       
+  function reloadMenu(orderList){
+     document.getElementById("menu").outerHTML =
+    `<section class="product" id="menu">
+    <h1 class="menu__title"> Nook shop<br>Please select an item <br>Scroll to see more</h1>
+    <div class="menu__finances">
+        <h3 class="bells">`+storage.bells +` bells</h3>
+    </div> <div class="menu__form" id="selectProduct">`
+    document.getElementById("selectProduct").innerHTML =message+   
+    `<br><p>Total Price: <span id="totalPrice">$0.00</span></p>
+    <br><button class="menu__btn" id="payNow">Pay now</button> </section>
+    </div>
+    <br><button class="menu__btn" id="backMenu">Main menu</button> </section>`;
+    console.log("menu reloaded")
+
+    //////
+    let shplist=document.getElementById('selectProduct');
+
+    let totalAmount=document.getElementById('totalPrice');
+    let checkers=shplist.querySelectorAll('input[type=checkbox]');
+    //console.log(checkers)
+    let totalPrice = 0;
+    checkers.forEach((box) => {
+      console.log(box);
+      box.addEventListener("change", () => {
+        
+        //box.forEach((checkbox) => {
+          if (box.checked) {
+            totalPrice += parseFloat(box.value);
+            
+          }
+          else if(box.checked==false){totalPrice -= parseFloat(box.value)}
+          console.log(totalPrice)
+        totalAmount.textContent = `$${totalPrice.toFixed(2)}`;
+      });
+    });
+
+      payNow.addEventListener('click',()=>{
+        console.log("ready");
+        let red2go=confirm("Your total is "+totalAmount.textContent +" bells"+"\nAre you sure?");
+        console.log(storage.bells)
+        if(totalPrice>storage.bells){
+          //alert("Sorry you dont have enought bells");
+            Toastify({
+              text: "sorry it seems you dont have enough bells",
+              gravity: "top",
+              position:"center",
+              className: "info",
+              style: {
+                background: "red",
+              }
+            }).showToast();
+          storing.setItem('userInfo',JSON.stringify(storage));}
+          else if(red2go){
+            storage.bells=storage.bells-totalPrice;
+            console.log("check out this "+ storage.bells)
+            console.log("saving in" + storing)
+            storing.setItem('userInfo',JSON.stringify(storage));
+            reloadMenu(orderList);
+          }
+        });
+      backMenu.addEventListener('click',()=>{
+        location.reload();
+        });
+        };
+  reloadMenu(orderList);
+}
+////////////////////////////////
 function shopping(storage,storing) {
   let orderList=[];
   function filtrMenu(){
@@ -296,12 +379,15 @@ function shopping(storage,storing) {
         if(btnonID<=4){
         orderList=order(btnonID,storeProducts);
         console.log(orderList)
-      loadMenu(storage,orderList)}
+      loadMenu(storage,orderList,storing)}
       //////////////this gives me the search options
       else if (btnonID == 5){
         let searchquer="";
         console.log("beging search");
         seachbar();
+        backMenu.addEventListener('click',()=>{
+          location.reload();
+          });
         seachNow.addEventListener('click',()=>{
           searchquer=document.getElementById('lookingFor').value;
           console.log(searchquer);
@@ -310,7 +396,7 @@ function shopping(storage,storing) {
           let newQuery=correctCase+remainLetter;
           console.log(newQuery);
           let catFind=findItem(newQuery,storeProducts);
-          loadMenu(storage,catFind);
+          loadMenu(storage,catFind,storing);
         })       
       }
 
@@ -321,69 +407,6 @@ function shopping(storage,storing) {
       });
 }
 
-/////////////////////////////////////////////////////////////////
-  function loadMenu(storage,orderList){
-  let message = "";
-  document.getElementById("menu").outerHTML =
-  `<section class="product" id="menu">
-  <h1 class="menu__title"> Nook shop<br>Please select an item <br>Scroll to see more</h1>
-  <div class="menu__finances">
-      <h3 class="bells">`+storage.bells +` bells</h3>
-  </div> <div class="menu__form" id="selectProduct">`
-  
-  for (i = 0; i < orderList.length; i++) {
-    message+=
-    `<input type=checkbox class="menu__btn" id=`+i+` value= `+orderList[i].precio+`><span class="label">`+orderList[i].nombre + "- price: "+orderList[i].precio+" bells"+ `</span> </input>`
-   }        
-  document.getElementById("selectProduct").innerHTML =message+   
-  `<br><p>Total Price: <span id="totalPrice">$0.00</span></p>
-  <br><button class="menu__btn" id="payNow">Pay now</button> </section>
-  </div>
-  <br><button class="menu__btn" id="backMenu">Main menu</button> </section>`;
-  console.log("menu reloaded")
-//////
-let shplist=document.getElementById('selectProduct');
-
-let totalAmount=document.getElementById('totalPrice');
-let checkers=shplist.querySelectorAll('input[type=checkbox]');
-//console.log(checkers)
-let totalPrice = 0;
-checkers.forEach((box) => {
-  console.log(box);
-  box.addEventListener("change", () => {
-    
-    //box.forEach((checkbox) => {
-      if (box.checked) {
-        totalPrice += parseFloat(box.value);
-        
-      }
-      else if(box.checked==false){totalPrice -= parseFloat(box.value)}
-      console.log(totalPrice)
-    totalAmount.textContent = `$${totalPrice.toFixed(2)}`;
-  });
-});
-
-  payNow.addEventListener('click',()=>{
-    console.log("ready");
-    let red2go=confirm("Your total is "+totalAmount.textContent +" bells"+"\nAre you sure?");
-    console.log(storage.bells)
-    if(totalPrice>storage.bells){
-      alert("Sorry you dont have enought miles");
-      storing.setItem('userInfo',JSON.stringify(storage));}
-      else {
-        storage.bells=storage.bells-totalPrice;
-        storing.setItem('userInfo',JSON.stringify(storage));
-      location.reload();}
-    });
-  backMenu.addEventListener('click',()=>{
-    location.reload();
-    });
-
-
-
-
-
-}
 ///////////////////////////////////////////////////
   filtrMenu();
 
@@ -422,7 +445,7 @@ function updateAmount(operation,amount,storage,storing){
   }
 }
 }
-
+/////////////////////menu del ATM que carga botones y hace trigger a las funciones
 function ATM(storage,storing){
   document.getElementById("menu").outerHTML =
   `<section class="product" id="menu">
@@ -433,10 +456,13 @@ function ATM(storage,storing){
   <div class="login__buttongroup">
   <button class="menu__btn" id=deposit>Deposit some bells </button>
   <button class="menu__btn" id=withdraw> Witdrawl some bells</button>
+  <br><button class="menu__btn" id="backMenu">Main menu</button>
   </div>
   </section>`
   
-  
+  backMenu.addEventListener('click',()=>{
+    location.reload();
+    });
   deposit.addEventListener('click',()=>{
     let amount=parseInt(document.getElementById("amount").value);
     if(isNaN(amount)){amount=0}
@@ -456,9 +482,7 @@ function ATM(storage,storing){
 /**Menu nuevo para log in, en este mira si hay info dentro del local storage que se relacione con un usuario
 esto dado que el usuario haya marcado la casilla de remember me y hace log in en automatico o
 si en caso tal de estar trabajando en la paguina que al recargar no se log out*/
-const savedData = JSON.parse(localStorage.getItem('userInfo'));
 
-const tempData=   JSON.parse(sessionStorage.getItem('userInfo'));
 
 
 
@@ -509,8 +533,11 @@ function mainMenu(storage,storing){
 
   logOout.addEventListener('click',()=>{
     console.log("leaving so soon?");
-    localStorage.clear();
-    sessionStorage.clear();
+    storage.pass='';
+    storage.user='';
+    if(Rmbr.checked){
+      localStorage.setItem('userInfo',JSON.stringify(storage));}
+    sessionStorage.setItem('userInfo',JSON.stringify(storage));
     location.reload();
   });
 
@@ -518,7 +545,7 @@ function mainMenu(storage,storing){
 
   }
 /** funcion que me permite que al cargar la paguina mire si hay datos guardados para evitar log in o si se recarga o cierra mantega sesion*/
-function autologin(savedData){
+function autologin(savedData,tempData){
   /*console.log("recived")*/
   if(savedData !==null){ 
     if(savedData.user==villager && savedData.pass ==password){
@@ -532,14 +559,35 @@ function autologin(savedData){
     }
   }
   }
+////////////////
 
-autologin(savedData);
-
-
-logiBtn.onclick= (e)=>{
-  logon(e);
+let sData="";
+logiBtn.addEventListener('click',(e,savedData,tempData)=>{
   
-  }; 
+
+  e.preventDefault();
+  if(savedData===undefined){
+    if(tempData===undefined){
+      console.log("huh")
+      sData={"bells":-1};
+    //*console.log(sData)*/ 
+    }
+      else{
+    sData=tempData;}
+  }
+  else{
+  sData=savedData;}
+  //console.log("whyim null"+ sData)
+  if (Rmbr.checked==true){
+    console.log("local storage");
+    logon(e,sData,localStorage);}
+  else{
+  console.log("session storage");
+  logon(e,sData,sessionStorage);
+}
+
+  
+  }); 
 regBtn.addEventListener('click',(e)=>{
   e.preventDefault();
   Toastify({
@@ -553,5 +601,24 @@ regBtn.addEventListener('click',(e)=>{
   }).showToast();
 
 })
+
+nukeBtn.addEventListener('click',(e)=>{
+  e.preventDefault();
+  Toastify({
+    text: "Sparkling clean",
+    gravity: "top",
+    position:"center",
+    className: "info",
+    style: {
+      background: "red",
+    }
+  }).showToast();
+  localStorage.clear();
+  sessionStorage.clear();
+  sData={"bells":-1};
+  location.reload();
+})
+
+autologin(savedData,tempData);
 /**/ ////////////////////////////////////////////////////////////// */
 
