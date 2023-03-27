@@ -105,6 +105,7 @@ let bells = 150000;
 let authorize = 2;
 
 let logiBtn=document.getElementById("login-btn");
+let regBtn=document.getElementById("registerBtn");
 let Rmbr=document.getElementById("remember");
 let attempts = 3;
 
@@ -539,5 +540,18 @@ logiBtn.onclick= (e)=>{
   logon(e);
   
   }; 
+regBtn.addEventListener('click',(e)=>{
+  e.preventDefault();
+  Toastify({
+    text: "comming soon---",
+    gravity: "top",
+    position:"center",
+    className: "info",
+    style: {
+      background: "#cc9900",
+    }
+  }).showToast();
+
+})
 /**/ ////////////////////////////////////////////////////////////// */
 
