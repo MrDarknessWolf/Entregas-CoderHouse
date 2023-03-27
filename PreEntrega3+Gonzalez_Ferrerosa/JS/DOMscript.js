@@ -417,9 +417,9 @@ function updateAmount(operation,amount,storage,storing){
     console.log("current: "+storage.bells);
     if(confirm("deposit: "+amount + " bells?")){
       
-      storage.bells=storage.bells-amount;
+      storage.bells=storage.bells+amount;
       storing.setItem('userInfo',JSON.stringify(storage));
-      location.reload();
+      
     }
   }
   else{
@@ -439,7 +439,6 @@ function updateAmount(operation,amount,storage,storing){
       
         storage.bells=storage.bells-amount;
         storing.setItem('userInfo',JSON.stringify(storage));
-        location.reload();
     }
 
   }
@@ -447,6 +446,7 @@ function updateAmount(operation,amount,storage,storing){
 }
 /////////////////////menu del ATM que carga botones y hace trigger a las funciones
 function ATM(storage,storing){
+  function reloadMenu(){
   document.getElementById("menu").outerHTML =
   `<section class="product" id="menu">
   <h1 class="menu__title"> Wellcome to the ATM <br>Current amount</h>
@@ -469,6 +469,7 @@ function ATM(storage,storing){
     console.log(amount)
     //console.log("ready");
     updateAmount(1,amount,storage,storing);
+    reloadMenu();
   });
   withdraw.addEventListener('click',()=>{
     let amount=parseInt(document.getElementById("amount").value);
@@ -476,8 +477,10 @@ function ATM(storage,storing){
     console.log(amount)
     //console.log("ready");
     updateAmount(0,amount,storage,storing);
-
+    reloadMenu();
   });
+}
+reloadMenu();
 }
 /**Menu nuevo para log in, en este mira si hay info dentro del local storage que se relacione con un usuario
 esto dado que el usuario haya marcado la casilla de remember me y hace log in en automatico o
