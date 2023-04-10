@@ -204,7 +204,8 @@ function logon(e,sData,storing){
         "user": usrnInput,"pass": passInput,
         "bells": bells,"miles":miles
       }}
-       console.log(storing)
+      console.log("SAVING INSIDE")
+      console.log(storing)
       storing.setItem('userInfo',JSON.stringify(userInfo));
       location.reload();
       mainMenu(userInfo); 
@@ -303,7 +304,7 @@ console.log("heello "+ milesData)
     });
 
   backMenu.addEventListener('click',()=>{
-    mainMenu(storage);
+    mainMenu(storage,storing);
     });}
   reloadMenu();
 }
@@ -348,252 +349,253 @@ function findItem(query,catalog){
 
 /////////////////////////////////////////////////////////////////
 function loadMenu(storage,orderList,storing){
-/////////////////////////funcion de ventana de pago general/////////////////
-    function paymentView(totalPrice){
-      console.log("ready");
-      console.log(storage.bells)
-      console.log("your total is" + (totalPrice))
-          Swal.fire({
-            title: 'Do you wish to pay now?',
-            text:'Cost '+totalPrice + ' bells',
-            showCancelButton: true,
-            confirmButtonColor: '#30ac7c',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'I want it!'
-    
-          }).then((result) => {
-            if (result.isConfirmed) {       
-            console.log("User has this amount of bells"+storage.bells)
-            /*En este caso cambio el alert por dos deciones del sweet alert */
-            
-            if(totalPrice>storage.bells){
-              Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'You don´t have enough bells!',
-                confirmButtonText: 'Oh no'
-              })}
-              else {
-                storage.bells=storage.bells-totalPrice;
-                console.log("check out this "+ storage.bells)
-                console.log("saving in" + storing)
-                storing.setItem('userInfo',JSON.stringify(storage));
-                Swal.fire(
-                  'Thank you','We will ship this item soon'); 
-                //////////////////////////borrar el carrro/////////
-                storing.removeItem('itemsinCar');
-                reloadMenu(orderList);
-                
-          }  
-        }})
-      
-    
-    }
- /////////////////////////////////////////////////////////////////////////////////////////////
-  let message = "";
-  for (i = 0; i < orderList.length; i++) { //saco la lista automatica para que no la exienda en la actualizacion de datos
-    message+=
-
-   /* `<input type=checkbox class="menu__btn" id=`+i+` value= `+orderList[i].precio+`><span class="label">`+orderList[i].nombre + "- price: "+orderList[i].precio+" bells"+ `</span> </input>`
-  Now we replace with the new buttons */  
- `<div class="shopItem">
-    <img src=`+orderList[i].image +`
-        class="shopItem__img">
-    <div class="shopItem__info">
-        <h2 class="shopItem__name">`+orderList[i].nombre+`</h2>        
-        <h1 class="shopItem__price" >`+orderList[i].precio+` bells</h1>
-        <h1 class="shopItem__id">id: `+orderList[i].idNum +`</h1>
-        <button class="menu__btn" id="b`+orderList[i].nombre+`">Buy now</button>
-        <button class="menu__btn"  id="C`+orderList[i].nombre+`">Add to Card</button>
-    </div>
-  </div> `
-  };       
-  function reloadMenu(orderList){
-     document.getElementById("menu").outerHTML =
-    `<section class="product" id="menu">
-    <h1 class="menu__title"> Nook shop<br>Please select an item <br>Scroll to see more</h1>
-    <div class="menu__finances">
-    <button class="menu__btn" id="backMenu">Main menu</button>
-        <h3 class="bells">`+storage.bells +` bells</h3>
-        <br><p>Total Price: <span id="totalPrice">$0.00</span></p>
-    <button class="menu__btn" id="payNow">Pay now</button>
-    <h2 class="menu__car">This are the items in the 🛒car </h2>
-    <div class="car" id="shopCar"> </div>
-   
-    <section class="shopItems"id="selectProduct">`
-
-    document.getElementById("selectProduct").innerHTML=message+` </section></section>`;
-    
-    console.log("menu reloaded")
-
-
-    /////
-    let currentList=JSON.parse(storing.getItem('itemsinCar'));
-    let shoppingCar=[];
-    const itemsinCar=[];
-    let totalPrice = 0;
-
-    if(currentList !==null){////////////si el usuario tiene algo en el carrito cargarlo///////////////////
-      let totalAmount=document.getElementById('totalPrice');
-      console.log("Loading previus items");
-     
-      for(let i=0;i<currentList.length;i++){
-        console.log(currentList[i].item);
-        itemsinCar.push(currentList[i])
-        shoppingCar.push(currentList[i].item); 
-        let carButtons=`
-        <div class="shopItemCar" id="incar`+currentList[i].item+`">
-          <img src=`+currentList[i].img +`
-              class="shopItem__img">
-          <div class="shopItem__info">
-              <h2 class="shopItem__name" >`+currentList[i].item+`🛒x`+currentList[i].quantity+`</h2>        
-              <h1 class="shopItem__price">`+(currentList[i].price*currentList[i].quantity)+` bells</h1>
-              <button class="removecar"id="R`+currentList[i].item+`">Remove</button>
-          </div>
-        </div>` 
-        document.getElementById('shopCar').innerHTML+=carButtons; 
-        totalPrice += parseFloat(currentList[i].price*currentList[i].quantity);
+  /////////////////////////funcion de ventana de pago general/////////////////
+      function paymentView(totalPrice){
+        console.log("ready");
+        console.log(storage.bells)
+        console.log("your total is" + (totalPrice))
+            Swal.fire({
+              title: 'Do you wish to pay now?',
+              text:'Cost '+totalPrice + ' bells',
+              showCancelButton: true,
+              confirmButtonColor: '#30ac7c',
+              cancelButtonColor: '#d33',
+              confirmButtonText: 'I want it!'
+  
+            }).then((result) => {
+              if (result.isConfirmed) {       
+              console.log("User has this amount of bells"+storage.bells)
+              /*En este caso cambio el alert por dos deciones del sweet alert */
+  
+              if(totalPrice>storage.bells){
+                Swal.fire({
+                  icon: 'error',
+                  title: 'Oops...',
+                  text: 'You don´t have enough bells!',
+                  confirmButtonText: 'Oh no'
+                })}
+                else {
+                  storage.bells=storage.bells-totalPrice;
+                  console.log("check out this "+ storage.bells)
+                  console.log("saving in" + storing)
+                  storing.setItem('userInfo',JSON.stringify(storage));
+                  Swal.fire(
+                    'Thank you','We will ship this item soon'); 
+                  //////////////////////////borrar el carrro/////////
+                  storing.removeItem('itemsinCar');
+                  reloadMenu(orderList);
+  
+            }  
+          }})
+  
+  
       }
-      totalAmount.textContent = `$${totalPrice.toFixed(2)}`;
-      };
-    ////////creamos el evento que escucha un click en la seccion de productos/////////////////
-    let selectItem=document.getElementById('selectProduct');
-    selectItem.addEventListener('click',(event)=>{
-      const btnon=event.target;
-      const btnname=Array.from(btnon.id)[0];
-      const btnitem=btnon.id.replace(btnname,"");
-      console.log("hello this is "+btnname+" item pointed "+ btnitem);
-      let totalAmount=document.getElementById('totalPrice');
-          if(btnname=="b"){///////////////////////////////metodo de pago directo
-            console.log("lets go pay")
-            const item=orderList.find(item =>item.nombre===btnitem);
-            console.log(item)
-            paymentView(item.precio);
-          }
-          else if (btnname=="C") {//////////////////reconoconozemos si el boton escogido es el de aladir al carrito
-            const item=orderList.find(item =>item.nombre===btnitem);
-            console.log(item)
-           let iteminCar="";
-            if(item){//////////////////////busco el item al que esta apuntando
-            iteminCar={"item":item.nombre,
-                            "img":item.image,
-                           "price":item.precio,
-                           "quantity":1,
-                            "totalinCar":item.precio}}
-           
-            totalPrice += parseFloat(item.precio);
-            let isInCar=shoppingCar.includes(btnitem);
-            let carButtons=`
-            <div class="shopItemCar" id="incar`+btnitem+`">
-              <img src=`+iteminCar.img +`
-                  class="shopItem__img">
-              <div class="shopItem__info">
-                  <h2 class="shopItem__name" >`+iteminCar.item+`🛒x`+iteminCar.quantity+`</h2>        
-                  <h1 class="shopItem__price">`+(iteminCar.price*iteminCar.quantity)+` bells</h1>
-                  <button class="removecar"id="R`+iteminCar.item+`">Remove</button>
-              </div>
-            </div>`
-          //////////////////eventos para añadir al carrito en caso tal de que no este
-         if(currentList==null || isInCar==false){
-            console.log("Item not in the car");
-             shoppingCar.push(btnitem);
-
-             itemsinCar.push(iteminCar);
-
-             storing.setItem('itemsinCar',JSON.stringify(itemsinCar));
-             currentList=JSON.parse(storing.getItem('itemsinCar'));
-             /////////////////     
-      
-             document.getElementById('shopCar').innerHTML+=carButtons;
-            }
-            //////////////////eventos para añadir al carrito en caso tal de que este dentro entonces cambia envez de sumar
-            else{
-              let tempList=JSON.parse(storing.getItem('itemsinCar'));
-              tempList.forEach(element => {
-                if(element.item==item.nombre){
-                let turn = tempList.indexOf(element);
-                tempList[turn].quantity+=1;
-                tempList[turn].totalinCar=tempList[turn].quantity*tempList[turn].price
-                 console.log("need to update"); 
-              }
-              });
-              storing.setItem('itemsinCar',JSON.stringify(tempList));
-              document.getElementById('incar'+btnitem).outerHTML=carButtons;
-    
-            }
-          } //////////////////total re definido dentro del codigo
-        console.log(totalPrice)
+   /////////////////////////////////////////////////////////////////////////////////////////////
+    let message = "";
+    for (i = 0; i < orderList.length; i++) { //saco la lista automatica para que no la exienda en la actualizacion de datos
+      message+=
+  
+     /* `<input type=checkbox class="menu__btn" id=`+i+` value= `+orderList[i].precio+`><span class="label">`+orderList[i].nombre + "- price: "+orderList[i].precio+" bells"+ `</span> </input>`
+    Now we replace with the new buttons */  
+   `<div class="shopItem">
+      <img src=`+orderList[i].image +`
+          class="shopItem__img">
+      <div class="shopItem__info">
+          <h2 class="shopItem__name">`+orderList[i].nombre+`</h2>        
+          <h1 class="shopItem__price" >`+orderList[i].precio+` bells</h1>
+          <h1 class="shopItem__id">id: `+orderList[i].idNum +`</h1>
+          <button class="menu__btn" id="b`+orderList[i].nombre+`">Buy now</button>
+          <button class="menu__btn"  id="C`+orderList[i].nombre+`">Add to Card</button>
+      </div>
+    </div> `
+    };       
+    function reloadMenu(orderList){
+       document.getElementById("menu").outerHTML =
+      `<section class="product" id="menu">
+      <h1 class="menu__title"> Nook shop<br>Please select an item <br>Scroll to see more</h1>
+      <div class="menu__finances">
+      <button class="menu__btn" id="backMenu">Main menu</button>
+          <h3 class="bells">`+storage.bells +` bells</h3>
+          <br><p>Total Price: <span id="totalPrice">$0.00</span></p>
+      <button class="menu__btn" id="payNow">Pay now</button>
+      <h2 class="menu__car">This are the items in the 🛒car </h2>
+      <div class="car" id="shopCar"> </div>
+     
+      <section class="shopItems"id="selectProduct">`
+  
+      document.getElementById("selectProduct").innerHTML=message+` </section></section>`;
+  
+      console.log("menu reloaded")
+  
+  
+      /////
+      let currentList=JSON.parse(storing.getItem('itemsinCar'));
+      let shoppingCar=[];
+      const itemsinCar=[];
+      let totalPrice = 0;
+  
+      if(currentList !==null){////////////si el usuario tiene algo en el carrito cargarlo///////////////////
+        let totalAmount=document.getElementById('totalPrice');
+        console.log("Loading previus items");
+  
+        for(let i=0;i<currentList.length;i++){
+          console.log(currentList[i].item);
+          itemsinCar.push(currentList[i])
+          shoppingCar.push(currentList[i].item); 
+          let carButtons=`
+          <div class="shopItemCar" id="incar`+currentList[i].item+`">
+            <img src=`+currentList[i].img +`
+                class="shopItem__img">
+            <div class="shopItem__info">
+                <h2 class="shopItem__name" >`+currentList[i].item+`🛒x`+currentList[i].quantity+`</h2>        
+                <h1 class="shopItem__price">`+(currentList[i].price*currentList[i].quantity)+` bells</h1>
+                <button class="removecar"id="R`+currentList[i].item+`">Remove</button>
+            </div>
+          </div>` 
+          document.getElementById('shopCar').innerHTML+=carButtons; 
+          totalPrice += parseFloat(currentList[i].price*currentList[i].quantity);
+        }
         totalAmount.textContent = `$${totalPrice.toFixed(2)}`;
-        reloadMenu(orderList);
-        //console.log("inside the shoppingcar:"+shoppingCar);
-      });
-/////////////////////////////evento para sacar elementos del carrito////////////////////////////////////////////////////////////////
-      let insideCar=document.getElementById('shopCar');
-      insideCar.addEventListener('click',(event)=>{
+        };
+      ////////creamos el evento que escucha un click en la seccion de productos/////////////////
+      let selectItem=document.getElementById('selectProduct');
+      selectItem.addEventListener('click',(event)=>{
         const btnon=event.target;
         const btnname=Array.from(btnon.id)[0];
         const btnitem=btnon.id.replace(btnname,"");
         console.log("hello this is "+btnname+" item pointed "+ btnitem);
-         let totalAmount=document.getElementById('totalPrice');
-         if(btnname=="R"){
-          const item=orderList.find(item =>item.nombre===btnitem);////encontremos el elemento que estamos buscando sacar
-          console.log("we found this item if you want to remove")
-          console.log(item)
-        ///////////metodo para sacar de la lista
-          totalPrice -= parseFloat(item.precio);
-          let carButtons=""
-          let tempList=JSON.parse(storing.getItem('itemsinCar'));
+        let totalAmount=document.getElementById('totalPrice');
+            if(btnname=="b"){///////////////////////////////metodo de pago directo
+              console.log("lets go pay")
+              const item=orderList.find(item =>item.nombre===btnitem);
+              console.log(item)
+              paymentView(item.precio);
+            }
+            else if (btnname=="C") {//////////////////reconoconozemos si el boton escogido es el de aladir al carrito
+              const item=orderList.find(item =>item.nombre===btnitem);
+              console.log(item)
+             let iteminCar="";
+              if(item){//////////////////////busco el item al que esta apuntando
+              iteminCar={"item":item.nombre,
+                              "img":item.image,
+                             "price":item.precio,
+                             "quantity":1,
+                              "totalinCar":item.precio}}
+  
+              totalPrice += parseFloat(item.precio);
+              let isInCar=shoppingCar.includes(btnitem);
+              let carButtons=`
+              <div class="shopItemCar" id="incar`+btnitem+`">
+                <img src=`+iteminCar.img +`
+                    class="shopItem__img">
+                <div class="shopItem__info">
+                    <h2 class="shopItem__name" >`+iteminCar.item+`🛒x`+iteminCar.quantity+`</h2>        
+                    <h1 class="shopItem__price">`+(iteminCar.price*iteminCar.quantity)+` bells</h1>
+                    <button class="removecar"id="R`+iteminCar.item+`">Remove</button>
+                </div>
+              </div>`
+            //////////////////eventos para añadir al carrito en caso tal de que no este
+           if(currentList==null || isInCar==false){
+              console.log("Item not in the car");
+               shoppingCar.push(btnitem);
+  
+               itemsinCar.push(iteminCar);
+  
+               storing.setItem('itemsinCar',JSON.stringify(itemsinCar));
+               currentList=JSON.parse(storing.getItem('itemsinCar'));
+               /////////////////     
+  
+               document.getElementById('shopCar').innerHTML+=carButtons;
+              }
+              //////////////////eventos para añadir al carrito en caso tal de que este dentro entonces cambia envez de sumar
+              else{
+                let tempList=JSON.parse(storing.getItem('itemsinCar'));
                 tempList.forEach(element => {
                   if(element.item==item.nombre){
                   let turn = tempList.indexOf(element);
-                      if(tempList[turn].quantity==1){ ////considero la posibilidad de que el elemento sea el ultimo en salir
-                      tempList.splice(turn,1);
-                      let removeThis="";
-                      shoppingCar.forEach(element => {
-                        if(element==item.nombre){
-                          removeThis=shoppingCar.indexOf(element);
-                        }
-                        shoppingCar.splice(removeThis,1);
-                      });
-                      storing.setItem('itemsinCar',JSON.stringify(tempList));        
-                      currentList=JSON.parse(storing.getItem('itemsinCar'));
-                      document.getElementById('incar'+btnitem).outerHTML='';
-                  }/////////////////////////////////////////
-                      else{
-                      tempList[turn].quantity-=1;
-                      tempList[turn].totalinCar=tempList[turn].quantity*tempList[turn].price
-                      console.log("need to update");
-                      carButtons=`
-                        <div class="shopItemCar" id="incar`+tempList[turn].item+`">
-                          <img src=`+tempList[turn].img +`
-                              class="shopItem__img">
-                          <div class="shopItem__info">
-                              <h2 class="shopItem__name" >`+tempList[turn].item+`🛒x`+tempList[turn].quantity+`</h2>        
-                              <h1 class="shopItem__price">`+(tempList[turn].price*tempList[turn].quantity)+` bells</h1>
-                              <button class="removecar"id="R`+tempList[turn].item+`">Remove</button>
-                          </div>
-                        </div>` 
-                        storing.setItem('itemsinCar',JSON.stringify(tempList));    
-                        document.getElementById('incar'+btnitem).outerHTML=carButtons;
-                    }}
+                  tempList[turn].quantity+=1;
+                  tempList[turn].totalinCar=tempList[turn].quantity*tempList[turn].price
+                   console.log("need to update"); 
+                }
                 });
-        /////////////////
-        totalAmount.textContent = `$${totalPrice.toFixed(2)}`;
-        reloadMenu(orderList)
-  }})
-////////////////////////////////////////EVENTO PARA PAGAR-LA LISTA//////////////////////////////////////////////////////
-      payNow.addEventListener('click',()=>{
-        paymentView(totalPrice)
-});
-///////////////////////////Evento para pagar un solo item ////////////////////////
-      backMenu.addEventListener('click',()=>{
-        location.reload();
+                storing.setItem('itemsinCar',JSON.stringify(tempList));
+                document.getElementById('incar'+btnitem).outerHTML=carButtons;
+  
+              }
+            } //////////////////total re definido dentro del codigo
+          console.log(totalPrice)
+          totalAmount.textContent = `$${totalPrice.toFixed(2)}`;
+          reloadMenu(orderList);
+          //console.log("inside the shoppingcar:"+shoppingCar);
         });
-        };
-  reloadMenu(orderList);
-}
-////////////////////////////////
+  /////////////////////////////evento para sacar elementos del carrito////////////////////////////////////////////////////////////////
+        let insideCar=document.getElementById('shopCar');
+        insideCar.addEventListener('click',(event)=>{
+          const btnon=event.target;
+          const btnname=Array.from(btnon.id)[0];
+          const btnitem=btnon.id.replace(btnname,"");
+          console.log("hello this is "+btnname+" item pointed "+ btnitem);
+           let totalAmount=document.getElementById('totalPrice');
+           if(btnname=="R"){
+            const item=orderList.find(item =>item.nombre===btnitem);////encontremos el elemento que estamos buscando sacar
+            console.log("we found this item if you want to remove")
+            console.log(item)
+          ///////////metodo para sacar de la lista
+            totalPrice -= parseFloat(item.precio);
+            let carButtons=""
+            let tempList=JSON.parse(storing.getItem('itemsinCar'));
+                  tempList.forEach(element => {
+                    if(element.item==item.nombre){
+                    let turn = tempList.indexOf(element);
+                        if(tempList[turn].quantity==1){ ////considero la posibilidad de que el elemento sea el ultimo en salir
+                        tempList.splice(turn,1);
+                        let removeThis="";
+                        shoppingCar.forEach(element => {
+                          if(element==item.nombre){
+                            removeThis=shoppingCar.indexOf(element);
+                          }
+                          shoppingCar.splice(removeThis,1);
+                        });
+                        storing.setItem('itemsinCar',JSON.stringify(tempList));        
+                        currentList=JSON.parse(storing.getItem('itemsinCar'));
+                        document.getElementById('incar'+btnitem).outerHTML='';
+                    }/////////////////////////////////////////
+                        else{
+                        tempList[turn].quantity-=1;
+                        tempList[turn].totalinCar=tempList[turn].quantity*tempList[turn].price
+                        console.log("need to update");
+                        carButtons=`
+                          <div class="shopItemCar" id="incar`+tempList[turn].item+`">
+                            <img src=`+tempList[turn].img +`
+                                class="shopItem__img">
+                            <div class="shopItem__info">
+                                <h2 class="shopItem__name" >`+tempList[turn].item+`🛒x`+tempList[turn].quantity+`</h2>        
+                                <h1 class="shopItem__price">`+(tempList[turn].price*tempList[turn].quantity)+` bells</h1>
+                                <button class="removecar"id="R`+tempList[turn].item+`">Remove</button>
+                            </div>
+                          </div>` 
+                          storing.setItem('itemsinCar',JSON.stringify(tempList));    
+                          document.getElementById('incar'+btnitem).outerHTML=carButtons;
+                      }}
+                  });
+          /////////////////
+          totalAmount.textContent = `$${totalPrice.toFixed(2)}`;
+          reloadMenu(orderList)
+    }})
+  ////////////////////////////////////////EVENTO PARA PAGAR-LA LISTA//////////////////////////////////////////////////////
+        payNow.addEventListener('click',()=>{
+          paymentView(totalPrice)
+  });
+  ///////////////////////////Evento para pagar un solo item ////////////////////////
+        backMenu.addEventListener('click',()=>{
+          location.reload();
+          });
+          };
+    reloadMenu(orderList);
+  }////////////////////////////
 function shopping(storage,storing) {
+  console.log("reporting on shopping")
+  console.log(storing)
   let orderList=[];
   function filtrMenu(){
     document.getElementById("menu").outerHTML =
@@ -764,8 +766,8 @@ si en caso tal de estar trabajando en la paguina que al recargar no se log out*/
 
 
 function mainMenu(storage,storing){
-  console.log("on main menu in is")
-  console.log(Rmbr.checked);
+  console.log("main menu reportying")
+  console.log(storing)
 
   console.log("Changing to main menu");
   document.getElementById("Styles").outerHTML =
@@ -810,6 +812,7 @@ function mainMenu(storage,storing){
   /**/// */
   bellsbtn.addEventListener('click',()=>{
     console.log("lets go shopping");
+    console.log(storing)
     shopping(storage,storing);
   });
   ATMbtn.addEventListener('click',()=>{
@@ -834,8 +837,6 @@ function mainMenu(storage,storing){
     localStorage.clear()}
     location.reload();
   });
-
-
   }
 /** funcion que me permite que al cargar la paguina mire si hay datos guardados para evitar log in o si se recarga o cierra mantega sesion*/
 function autologin(savedData,tempData){
@@ -852,8 +853,7 @@ function autologin(savedData,tempData){
   console.log("second condigiontal");
   if(false){}
   else if( tempData !==null){
-    console.log("dingdong")
-    console.log(tempData)
+
     if(tempData.user==villager && tempData.pass ==password){
       console.log("Temp Back");
       mainMenu(tempData,sessionStorage);
@@ -924,11 +924,8 @@ nukeBtn.addEventListener('click',(e)=>{
   setTimeout(()=>{location.reload()},500);
   
 })
-
 autologin(savedData,tempData);
 let checkLoad=JSON.parse(localStorage.getItem('check'));
-console.log("exist");
-console.log(checkLoad)
 
 window.addEventListener('load',()=>{
   console.log("check on first")
