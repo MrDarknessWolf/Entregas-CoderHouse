@@ -121,22 +121,13 @@ let logiBtn=document.getElementById("login-btn");
 let regBtn=document.getElementById("registerBtn");
 let nukeBtn=document.getElementById("nukeBtn");
 let Rmbr=document.getElementById("remember");
-Rmbr.addEventListener('change',()=>{
-if(Rmbr.checked){
-  console.log("will remember now");
-  rememberMe=true;
-}else{
-  console.log("will NOT remember now");
-  rememberMe=true;
-}
 
-});
 
-let rememberMe="";
 let attempts = 3;
 
-const savedData = JSON.parse(localStorage.getItem('userInfo'));
-const tempData=   JSON.parse(sessionStorage.getItem('userInfo'));
+let savedData = JSON.parse(localStorage.getItem('userInfo'));
+let tempData=   JSON.parse(sessionStorage.getItem('userInfo'));
+
 let storing=""
 
 //**funciones del json del json */
@@ -208,15 +199,15 @@ function logon(e,sData,storing){
       if(sData.bells>=0){
         userInfo={"user": usrnInput,"pass": passInput,
         "bells": sData.bells,"miles":sData.miles};
-      }else{
+      }else{console.log("you had info but we ignored it")
         userInfo={
         "user": usrnInput,"pass": passInput,
         "bells": bells,"miles":miles
       }}
        console.log(storing)
-      storing.setItem('userInfo',JSON.stringify(userInfo))
+      storing.setItem('userInfo',JSON.stringify(userInfo));
       location.reload();
-      mainMenu(userInfo);  
+      mainMenu(userInfo); 
       }
   }
   
@@ -662,6 +653,20 @@ function shopping(storage,storing) {
 function updateAmount(operation,amount,storage,storing){
   if(operation==1){
     console.log("current: "+storage.bells);
+    if(amount+storage.bells>999999){
+      Toastify({
+        text: "This account cant hold more than 999.999 bells",
+        gravity: "top",
+        position:"center",
+        className: "info",
+        style: {
+          background: "red",
+        }
+      }).showToast();
+    }
+    else{
+    
+
     Swal.fire({
       title: 'Do you wish to deposit this?',
       text:'deposit '+amount + ' bells',
@@ -676,7 +681,7 @@ function updateAmount(operation,amount,storage,storing){
         storing.setItem('userInfo',JSON.stringify(storage)); 
         ATM(storage,storing);    
       };
-    });
+    });}
     //////
   }
   else{
@@ -759,6 +764,10 @@ si en caso tal de estar trabajando en la paguina que al recargar no se log out*/
 
 
 function mainMenu(storage,storing){
+  console.log("on main menu in is")
+  console.log(Rmbr.checked);
+
+  console.log("Changing to main menu");
   document.getElementById("Styles").outerHTML =
   `<link rel="stylesheet" href="./CCS3/menustyles.css" id="Styles">`
   let currentMenu =
@@ -780,7 +789,7 @@ function mainMenu(storage,storing){
   </div> 
   </section>`
   document.getElementById("menu").outerHTML =currentMenu;
-
+  
 ///** variables del menu principal creadas dentro porque si se crean antes del menu entra en valor null*/
   let logOout=document.getElementById("logOut");
   let milesbtn=document.getElementById("milesbtn");
@@ -810,43 +819,58 @@ function mainMenu(storage,storing){
 
 
   logOout.addEventListener('click',()=>{
-    console.log(rememberMe)
     console.log("leaving so soon?");
     storage.pass='';
     storage.user='';
-    console.log("forgetting all")
-    localStorage.setItem('userInfo',JSON.stringify(storage));
+    console.log("why");
+    let RmbrLast=JSON.parse(localStorage.getItem('check'));
+    console.log(RmbrLast)
+    if(RmbrLast){
+      console.log("cleaning")
+      localStorage.setItem('userInfo',JSON.stringify(storage));
+      localStorage.setItem('check',false)}
+      else{
     sessionStorage.setItem('userInfo',JSON.stringify(storage));
+    localStorage.clear()}
     location.reload();
   });
-
 
 
   }
 /** funcion que me permite que al cargar la paguina mire si hay datos guardados para evitar log in o si se recarga o cierra mantega sesion*/
 function autologin(savedData,tempData){
   /*console.log("recived")*/
+  console.log("ateempting autloging")
+  console.log(tempData)
   if(savedData !==null){ 
     if(savedData.user==villager && savedData.pass ==password){
+      
       console.log("Welcome back");
       mainMenu(savedData,localStorage);
-    }}
-  else if( tempData !== null){
+    }else{console.log("not found in local")}
+  }
+  console.log("second condigiontal");
+  if(false){}
+  else if( tempData !==null){
+    console.log("dingdong")
+    console.log(tempData)
     if(tempData.user==villager && tempData.pass ==password){
       console.log("Temp Back");
       mainMenu(tempData,sessionStorage);
-    }
+    }else{console.log("not found in session")}
   }
   }
 ////////////////
 
 let sData="";
-logiBtn.addEventListener('click',(e,savedData,tempData)=>{
-  
-
+logiBtn.addEventListener('click',(e)=>{
   e.preventDefault();
-  if(savedData===undefined){
-    if(tempData===undefined){
+let savedData = JSON.parse(localStorage.getItem('userInfo'));
+let tempData=   JSON.parse(sessionStorage.getItem('userInfo'));
+  console.log(savedData)
+  console.log(tempData)
+  if(savedData==undefined){
+    if(tempData==undefined){
       console.log("huh")
       sData={"bells":-1};
     //*console.log(sData)*/ 
@@ -857,8 +881,9 @@ logiBtn.addEventListener('click',(e,savedData,tempData)=>{
   else{
   sData=savedData;}
   //console.log("whyim null"+ sData)
-  if (Rmbr.checked==true){
+  if (JSON.parse(localStorage.getItem('check'))){
     console.log("local storage");
+
     logon(e,sData,localStorage);}
   else{
   console.log("session storage");
@@ -901,6 +926,19 @@ nukeBtn.addEventListener('click',(e)=>{
 })
 
 autologin(savedData,tempData);
+let checkLoad=JSON.parse(localStorage.getItem('check'));
+console.log("exist");
+console.log(checkLoad)
 
+window.addEventListener('load',()=>{
+  console.log("check on first")
+  console.log(Rmbr.check);
+  localStorage.setItem('check',Rmbr.checked)
+  if(checkLoad){localStorage.setItem('check',true)}
+});  
+Rmbr.addEventListener('change',()=>{
+    console.log("check on first")
+    console.log(Rmbr.check);
+    localStorage.setItem('check',Rmbr.checked)});
 /**/ ////////////////////////////////////////////////////////////// */
 
